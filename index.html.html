@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#151719">
+<title>Persona Project — Progress Board</title>
+<style>
+:root{color-scheme:dark;--bg:#101214;--panel:#191c20;--panel2:#20242a;--text:#f3f4f6;--muted:#a5abb4;--line:#30353d;--accent:#e5a15a;--good:#b8e0c2}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#24201b 0,#101214 48%);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{width:min(1000px,100%);margin:auto;padding:24px 17px 55px}.eyebrow{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:750}
+header{padding:20px 0 18px}h1{font-size:clamp(2rem,6vw,3.35rem);line-height:1.04;letter-spacing:-.04em;margin:12px 0}header p{color:var(--muted);max-width:700px;margin:0}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 18px}.nav button{flex:1;min-width:160px;font-weight:700}.nav button.active{background:var(--accent);border-color:var(--accent);color:#171717}
+.page{display:none}.page.active{display:block}
+.summary{background:linear-gradient(135deg,#25282d,#191c20);border:1px solid var(--line);border-radius:20px;padding:21px;margin:14px 0 18px}
+.summary-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}.big{font-size:2.55rem;font-weight:800;letter-spacing:-.05em;line-height:1}.muted{color:var(--muted);font-size:.9rem}
+.track{height:9px;background:#383d45;border-radius:99px;overflow:hidden;margin:16px 0 10px}.fill{height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .2s}
+.stats{display:flex;gap:17px;flex-wrap:wrap;color:var(--muted);font-size:.88rem}.stats strong{color:var(--text)}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0 21px}button{font:inherit;cursor:pointer;border-radius:11px;padding:10px 13px;border:1px solid var(--line);background:var(--panel2);color:var(--text)}button:hover{border-color:var(--accent)}button.primary{background:var(--accent);color:#171717;border-color:var(--accent);font-weight:750}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.stage{background:var(--panel);border:1px solid var(--line);border-radius:17px;overflow:hidden}.stage-head{padding:16px 17px;background:#1d2024;border-bottom:1px solid var(--line);cursor:pointer;display:flex;align-items:center;gap:11px}.stage-head h2{font-size:1.02rem;margin:0}.stage-head p{font-size:.82rem;color:var(--muted);margin:3px 0 0}.num{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:12px;background:#342b23;color:var(--accent);font-weight:800}.stage-count{margin-left:auto;white-space:nowrap;color:var(--muted);font-size:.8rem}.items{padding:8px 15px 13px}.task{display:flex;gap:10px;align-items:flex-start;padding:10px 2px;border-bottom:1px solid #292d33;cursor:pointer}.task:last-child{border-bottom:0}.task input{accent-color:var(--accent);width:18px;height:18px;margin:3px 0 0;flex:0 0 auto}.task span{font-size:.92rem}.task.done span{color:#818891;text-decoration:line-through}.stage.collapsed .items{display:none}.stage.collapsed .chevron{transform:rotate(-90deg)}.chevron{color:var(--muted);transition:transform .2s}
+.content-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.content-card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:16px}.content-card h2{font-size:1.02rem;margin:0 0 3px}.content-card p{font-size:.82rem;color:var(--muted);margin:0 0 9px}.content-card .task{padding:8px 1px}.content-card .task span{font-size:.9rem}.content-head{display:flex;gap:10px;align-items:center;margin-bottom:6px}.content-num{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border-radius:11px;background:#342b23;color:var(--accent);font-weight:800}.content-card input.title-edit{width:100%;background:#111315;border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--text);font:inherit;margin:8px 0 4px}.notice{color:var(--good);font-size:.86rem;margin-top:10px}.footer{margin-top:24px;padding:17px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.83rem}
+@media(max-width:680px){.wrap{padding:17px 12px 38px}.grid,.content-list{grid-template-columns:1fr}.summary{padding:17px}.big{font-size:2.15rem}.stage-head{padding:14px}.items{padding:7px 13px 11px}.nav button{min-width:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Persona Project Indonesia · Production tracker</div>
+  <h1>Progress<br><span style="color:var(--accent)">Board.</span></h1>
+  <p>Tempat memantau progres produksi short film sinematik dan daftar konten. Centang tugas yang selesai; progres disimpan otomatis di browser ini.</p>
+</header>
+<nav class="nav" aria-label="Halaman tracker">
+  <button class="active" data-page="film">🎬 Progres Short Film</button>
+  <button data-page="content">▤ Progres List Konten</button>
+</nav>
+
+<section class="page active" id="page-film">
+  <div class="summary">
+    <div class="summary-top"><div><div class="muted">Progres produksi film</div><div class="big" id="filmPercent">0%</div></div><div class="muted" id="filmStatus">Mulai dari tahap pertama</div></div>
+    <div class="track"><div class="fill" id="filmFill"></div></div>
+    <div class="stats"><span><strong id="filmCompleted">0</strong> tugas selesai</span><span><strong id="filmRemaining">43</strong> tugas tersisa</span><span><strong id="filmStageCount">0/4</strong> tahap selesai</span></div>
+    <div class="notice" id="filmSaved">✓ Penyimpanan otomatis aktif</div>
+  </div>
+  <div class="actions">
+    <button class="primary" id="expandAll">Buka semua tahap</button><button id="collapseAll">Tutup semua tahap</button><button id="exportFilm">Unduh progres film (.txt)</button><button id="resetFilm">Reset progres film</button>
+  </div>
+  <main class="grid" id="stages"></main>
+</section>
+
+<section class="page" id="page-content">
+  <div class="summary">
+    <div class="summary-top"><div><div class="muted">Progres daftar konten</div><div class="big" id="contentPercent">0%</div></div><div class="muted" id="contentStatus">Siapkan konten pertama</div></div>
+    <div class="track"><div class="fill" id="contentFill"></div></div>
+    <div class="stats"><span><strong id="contentCompleted">0</strong> langkah selesai</span><span><strong id="contentRemaining">43</strong> langkah tersisa</span><span><strong id="contentDoneItems">0/8</strong> konten selesai</span></div>
+    <div class="notice" id="contentSaved">✓ Penyimpanan otomatis aktif</div>
+  </div>
+  <div class="actions">
+    <button class="primary" id="exportContent">Unduh progres konten (.txt)</button><button id="resetContent">Reset progres konten</button>
+  </div>
+  <p class="muted">Isi nama/judul tiap konten pada kolom yang tersedia. Setiap konten punya checklist dari ide sampai publikasi.</p>
+  <div class="content-list" id="contentList"></div>
+</section>
+
+<div class="footer">Catatan: progres disimpan di browser dan perangkat yang kamu gunakan. Jika membuka di browser/perangkat lain, centang tidak otomatis ikut pindah. Gunakan tombol unduh progres untuk membuat salinan cadangan.</div>
+</div>
+<script>
+const filmStages = [
+{name:"Pra-produksi",subtitle:"Perencanaan sebelum shooting",tasks:["Menentukan ide, genre, dan pesan film","Menentukan target penonton, platform, dan durasi","Menyelesaikan storyline dari awal sampai akhir","Menulis script lengkap: scene, aksi, dan dialog","Menentukan karakter serta kebutuhan talent","Membuat storyboard atau gambaran visual","Menyusun shot list setiap scene","Menentukan lokasi, kostum, properti, dan jadwal","Mengecek izin lokasi dan rencana cadangan","Menguji kamera, pencahayaan, dan audio"]},
+{name:"Produksi",subtitle:"Pelaksanaan shooting",tasks:["Mengecek baterai dan ruang penyimpanan","Menentukan resolusi, frame rate, shutter, dan white balance","Mengatur blocking serta posisi talent","Merekam establishing shot dan master shot","Merekam wide shot, medium shot, dan close-up","Merekam over-the-shoulder dan reaction shot bila diperlukan","Mengambil B-roll dan insert detail","Mengarahkan dialog, ekspresi, dan jeda akting","Merekam ambience, room tone, dan efek suara","Memeriksa fokus, eksposur, dan audio setiap take","Mencatat take terbaik dan menjaga continuity","Memeriksa semua footage sebelum meninggalkan lokasi"]},
+{name:"Editing",subtitle:"Menyusun cerita dan membangun suasana",tasks:["Membuat backup footage","Mengelompokkan file video, audio, dan aset","Memilih take terbaik","Menyusun rough cut berdasarkan cerita","Memperbaiki alur, ritme, dan durasi","Membersihkan dialog dan mengatur volume audio","Menambahkan ambience, musik, dan sound effect","Melakukan color correction","Melakukan color grading sesuai mood film","Menambahkan subtitle dan credit jika diperlukan","Memeriksa transisi, continuity, dan sinkronisasi audio"]},
+{name:"Finalisasi",subtitle:"Quality control dan publikasi",tasks:["Memastikan resolusi, rasio, dan frame rate sesuai target","Memeriksa tidak ada frame hitam atau glitch","Memastikan dialog jelas dan musik tidak menutupinya","Memeriksa konsistensi warna antarshot","Memeriksa ejaan subtitle, nama, dan credit","Memastikan lisensi musik serta aset aman digunakan","Menonton video final dari awal sampai akhir","Mengekspor master video dan versi media sosial","Menyimpan project file serta backup","Mempublikasikan film dan mengevaluasi hasilnya"]}
+];
+const filmKey="personaFilmProgress_v1", contentKey="personaContentProgress_v1";
+let filmChecked={}, contentChecked={}, contentTitles={};
+try{filmChecked=JSON.parse(localStorage.getItem(filmKey)||"{}")||{}}catch(e){}
+try{const d=JSON.parse(localStorage.getItem(contentKey)||"{}")||{};contentChecked=d.checked||{};contentTitles=d.titles||{}}catch(e){}
+const filmRoot=document.getElementById("stages");
+filmStages.forEach((stage,i)=>{
+ const card=document.createElement("section");card.className="stage";
+ const head=document.createElement("div");head.className="stage-head";head.tabIndex=0;head.setAttribute("role","button");head.setAttribute("aria-expanded","true");
+ head.innerHTML=`<div class="num">0${i+1}</div><div><h2>${stage.name}</h2><p>${stage.subtitle}</p></div><div class="stage-count" id="film-count-${i}">0/${stage.tasks.length}</div><div class="chevron">⌄</div>`;
+ const items=document.createElement("div");items.className="items";
+ stage.tasks.forEach((task,j)=>{const id=`${i}-${j}`,label=document.createElement("label");label.className="task";const input=document.createElement("input");input.type="checkbox";input.checked=!!filmChecked[id];const span=document.createElement("span");span.textContent=task;label.append(input,span);items.append(label);if(input.checked)label.classList.add("done");input.addEventListener("change",()=>{filmChecked[id]=input.checked;label.classList.toggle("done",input.checked);saveFilm();updateFilm()});});
+ const toggle=()=>{card.classList.toggle("collapsed");head.setAttribute("aria-expanded",String(!card.classList.contains("collapsed")));};head.addEventListener("click",toggle);head.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle()}});
+ card.append(head,items);filmRoot.append(card);
+});
+function saveFilm(){try{localStorage.setItem(filmKey,JSON.stringify(filmChecked));document.getElementById("filmSaved").textContent="✓ Progres film tersimpan otomatis"}catch(e){document.getElementById("filmSaved").textContent="Penyimpanan browser tidak tersedia. Unduh progres sebagai cadangan."}}
+function updateFilm(){let n=0,doneStages=0;filmStages.forEach((s,i)=>{const c=s.tasks.filter((_,j)=>!!filmChecked[`${i}-${j}`]).length;n+=c;document.getElementById(`film-count-${i}`).textContent=`${c}/${s.tasks.length}`;if(c===s.tasks.length)doneStages++});const total=filmStages.reduce((a,s)=>a+s.tasks.length,0),pct=Math.round(n/total*100);document.getElementById("filmPercent").textContent=pct+"%";document.getElementById("filmFill").style.width=pct+"%";document.getElementById("filmCompleted").textContent=n;document.getElementById("filmRemaining").textContent=total-n;document.getElementById("filmStageCount").textContent=`${doneStages}/4`;document.getElementById("filmStatus").textContent=pct===100?"Film siap diarsipkan 🎬":pct===0?"Mulai dari tahap pertama":pct<25?"Sedang membangun fondasi":pct<55?"Produksi mulai berjalan":pct<85?"Film sedang dirangkai":"Hampir selesai — QC terakhir"}
+document.getElementById("expandAll").onclick=()=>document.querySelectorAll("#stages .stage").forEach(c=>{c.classList.remove("collapsed");c.querySelector(".stage-head").setAttribute("aria-expanded","true")});
+document.getElementById("collapseAll").onclick=()=>document.querySelectorAll("#stages .stage").forEach(c=>{c.classList.add("collapsed");c.querySelector(".stage-head").setAttribute("aria-expanded","false")});
+document.getElementById("resetFilm").onclick=()=>{if(confirm("Yakin ingin menghapus semua centang progres film?")){filmChecked={};document.querySelectorAll("#stages input[type=checkbox]").forEach(i=>{i.checked=false;i.closest(".task").classList.remove("done")});saveFilm();updateFilm()}};
+document.getElementById("exportFilm").onclick=()=>{const lines=["PERSONA PROJECT — PROGRES SHORT FILM","Progres: "+document.getElementById("filmPercent").textContent,""];filmStages.forEach((s,i)=>{lines.push((i+1)+". "+s.name);s.tasks.forEach((t,j)=>lines.push((filmChecked[`${i}-${j}`]?"[x] ":"[ ] ")+t));lines.push("")});downloadText(lines.join("\n"),"progres-short-film.txt")};
+const workflow=["Menentukan ide/topik","Membuat konsep dan alur","Menyiapkan caption atau naskah","Produksi foto/video atau desain","Editing dan pemeriksaan hasil","Menyiapkan cover, caption, dan hashtag","Publikasi / upload"];
+const contentItems=[...Array.from({length:7},(_,i)=>({id:"ig"+(i+1),title:"Konten Instagram "+(i+1),subtitle:"Konten IG · slot "+(i+1),tasks:workflow})),{id:"film1",title:"Short Film 1",subtitle:"Konten video sinematik",tasks:["Menentukan ide dan pesan cerita","Menulis script dan dialog","Membuat storyboard serta shot list","Menyiapkan talent, lokasi, dan properti","Shooting seluruh scene","Editing, audio, dan color grading","QC, export, caption, dan publikasi"]}];
+const contentRoot=document.getElementById("contentList");
+contentItems.forEach((item,idx)=>{const card=document.createElement("section");card.className="content-card";const head=document.createElement("div");head.className="content-head";const num=document.createElement("div");num.className="content-num";num.textContent=idx<7?String(idx+1).padStart(2,"0"):"🎬";const h=document.createElement("h2");h.textContent=item.title;head.append(num,h);const sub=document.createElement("p");sub.textContent=item.subtitle;const titleInput=document.createElement("input");titleInput.className="title-edit";titleInput.type="text";titleInput.placeholder="Tulis judul/topik konten (opsional)";titleInput.value=contentTitles[item.id]||"";titleInput.setAttribute("aria-label","Judul untuk "+item.title);titleInput.addEventListener("input",()=>{contentTitles[item.id]=titleInput.value;saveContent()});const items=document.createElement("div");items.className="items";item.tasks.forEach((task,j)=>{const id=item.id+"-"+j,label=document.createElement("label");label.className="task";const input=document.createElement("input");input.type="checkbox";input.checked=!!contentChecked[id];const span=document.createElement("span");span.textContent=task;label.append(input,span);items.append(label);if(input.checked)label.classList.add("done");input.addEventListener("change",()=>{contentChecked[id]=input.checked;label.classList.toggle("done",input.checked);saveContent();updateContent()})});card.append(head,sub,titleInput,items);contentRoot.append(card)});
+function saveContent(){try{localStorage.setItem(contentKey,JSON.stringify({checked:contentChecked,titles:contentTitles}));document.getElementById("contentSaved").textContent="✓ Progres konten tersimpan otomatis"}catch(e){document.getElementById("contentSaved").textContent="Penyimpanan browser tidak tersedia. Unduh progres sebagai cadangan."}}
+function updateContent(){let total=0,done=0,doneItems=0;contentItems.forEach(item=>{let itemDone=0;item.tasks.forEach((_,j)=>{total++;if(contentChecked[item.id+"-"+j]){done++;itemDone++}});if(itemDone===item.tasks.length)doneItems++});const pct=Math.round(done/total*100);document.getElementById("contentPercent").textContent=pct+"%";document.getElementById("contentFill").style.width=pct+"%";document.getElementById("contentCompleted").textContent=done;document.getElementById("contentRemaining").textContent=total-done;document.getElementById("contentDoneItems").textContent=doneItems+"/8";document.getElementById("contentStatus").textContent=pct===100?"Semua konten selesai 🎉":pct===0?"Siapkan konten pertama":doneItems+" dari 8 konten selesai"}
+document.getElementById("resetContent").onclick=()=>{if(confirm("Yakin ingin menghapus semua centang progres konten? Judul konten tetap disimpan.")){contentChecked={};document.querySelectorAll("#contentList input[type=checkbox]").forEach(i=>{i.checked=false;i.closest(".task").classList.remove("done")});saveContent();updateContent()}};
+document.getElementById("exportContent").onclick=()=>{const lines=["PERSONA PROJECT — PROGRES LIST KONTEN","Progres: "+document.getElementById("contentPercent").textContent,""];contentItems.forEach(item=>{lines.push(item.title+(contentTitles[item.id]?" — "+contentTitles[item.id]:""));item.tasks.forEach((t,j)=>lines.push((contentChecked[item.id+"-"+j]?"[x] ":"[ ] ")+t));lines.push("")});downloadText(lines.join("\n"),"progres-list-konten.txt")};
+function downloadText(text,filename){const blob=new Blob([text],{type:"text/plain;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;a.click();URL.revokeObjectURL(url)}
+document.querySelectorAll(".nav button").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b===btn));document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+btn.dataset.page))}));
+updateFilm();updateContent();
+</script>
+</body>
+</html>
